@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jai — Video Creator & Editor</title>
+<meta name="description" content="พอร์ตโฟลิโอวิดีโอสั้นสาย TikTok, Facebook, Instagram ที่เน้นปิดการขาย">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Noto+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#14121c; --panel:#1e1b2b; --line:#34304a; --text:#f3f0fa; --muted:#aaa5c2;
+  --pink:#ff5c8a; --cyan:#5ce1e6;
+  --display:'Bricolage Grotesque','Noto Sans Thai',sans-serif;
+  --body:'Noto Sans Thai','Bricolage Grotesque',system-ui,sans-serif;
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font:400 17px/1.75 var(--body);-webkit-font-smoothing:antialiased}
+[v-cloak]{display:none}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:3px;border-radius:6px}
+.wrap{width:min(1100px,100% - 40px);margin-inline:auto}
+section{padding:96px 0}
+h2{font:800 clamp(30px,5vw,48px)/1.15 var(--display);margin-bottom:12px}
+.sub{color:var(--muted);max-width:56ch;margin-bottom:40px}
+
+/* nav */
+nav{position:sticky;top:0;z-index:20;background:rgba(20,18,28,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font:800 22px var(--display);text-decoration:none}
+.logo b{color:var(--pink)}
+nav ul{display:flex;gap:26px;list-style:none;padding:0}
+nav ul a{text-decoration:none;color:var(--muted);font-size:15px;transition:color .2s}
+nav ul a:hover{color:var(--text)}
+.btn{display:inline-block;padding:12px 24px;border-radius:999px;font-weight:600;text-decoration:none;border:2px solid var(--pink);background:var(--pink);color:#14121c;transition:transform .2s,background .2s}
+.btn:hover{transform:translateY(-2px);background:#ff7ea0}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--cyan);background:transparent}
+
+/* hero */
+.hero{padding:72px 0 56px}
+.hero h1{font:800 clamp(44px,9vw,104px)/1 var(--display);letter-spacing:-.03em;margin:14px 0 18px;animation:rise .9s cubic-bezier(.2,.8,.2,1) both}
+.hero .role{font:500 clamp(20px,3vw,30px) var(--display);color:var(--cyan);min-height:1.5em}
+.caret{display:inline-block;width:3px;height:1em;background:var(--cyan);margin-left:4px;vertical-align:-.12em;animation:blink 1s steps(1) infinite}
+.hero p.lead{max-width:52ch;color:var(--muted);margin:16px 0 30px;font-size:18px}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+@keyframes rise{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes blink{50%{opacity:0}}
+
+/* timeline */
+.tl{margin-top:56px;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:14px 14px 16px;position:relative;cursor:ew-resize;touch-action:pan-y;user-select:none}
+.tl-top{display:flex;justify-content:space-between;font:500 14px ui-monospace,Menlo,monospace;color:var(--muted);margin-bottom:10px}
+.tl-top .tc{color:var(--cyan)}
+.lane{display:flex;align-items:center;gap:10px;margin-top:8px}
+.lane i{font:normal 600 12px var(--body);color:var(--muted);width:24px}
+.lane div{position:relative;flex:1;height:42px;display:flex;gap:4px}
+.clip{border-radius:8px;display:flex;align-items:center;padding:0 10px;font-size:12px;font-weight:600;color:#14121c;overflow:hidden;white-space:nowrap}
+.v .clip:nth-child(odd){background:var(--cyan)}
+.v .clip:nth-child(even){background:var(--pink)}
+.a .clip{background:repeating-linear-gradient(90deg,#6b6690 0 2px,transparent 2px 5px);background-size:100% 70%;background-position:center;background-repeat:no-repeat;border-radius:4px}
+.head{position:absolute;top:0;bottom:0;width:2px;background:#fff;left:calc(34px + 14px + (100% - 34px - 28px) * var(--x));pointer-events:none}
+.head::before{content:"";position:absolute;top:-6px;left:-6px;width:14px;height:14px;background:#fff;clip-path:polygon(0 0,100% 0,50% 100%)}
+
+/* about */
+.about{display:grid;grid-template-columns:1.3fr 1fr;gap:56px;align-items:start}
+.about p{color:var(--muted);margin-bottom:16px}
+.about p strong{color:var(--text);font-weight:600}
+.tags{display:flex;flex-wrap:wrap;gap:10px}
+.tag{padding:7px 16px;border:1px solid var(--line);border-radius:999px;font-size:15px;transition:border-color .2s,color .2s,transform .2s}
+.tag:hover{border-color:var(--pink);color:var(--pink);transform:rotate(-2deg)}
+.facts{display:grid;gap:14px;margin-bottom:28px}
+.fact{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px}
+.fact b{display:block;font:800 30px var(--display);color:var(--cyan)}
+.fact span{color:var(--muted);font-size:15px}
+
+/* work */
+.filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:32px}
+.filters button{font:500 15px var(--body);color:var(--muted);background:none;border:1px solid var(--line);border-radius:999px;padding:8px 20px;cursor:pointer;transition:all .2s}
+.filters button:hover{color:var(--text)}
+.filters button.on{background:var(--cyan);border-color:var(--cyan);color:#14121c;font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:22px;align-items:start;grid-auto-flow:dense}
+.card.wide{grid-column:span 2}
+.card{background:none;border:0;color:inherit;text-align:left;cursor:pointer;font:inherit}
+.thumb{position:relative;aspect-ratio:var(--r,9/16);border-radius:16px;background-size:cover;background-position:center;overflow:hidden;display:flex;align-items:flex-end;border:1px solid var(--line);transition:transform .25s}
+.card:hover .thumb,.card:focus-visible .thumb{transform:translateY(-6px)}
+.thumb .ph{padding:18px;font:700 20px/1.25 var(--display);color:#14121c}
+.dur{position:absolute;top:10px;right:10px;background:rgba(20,18,28,.8);color:#fff;font:500 12px ui-monospace,monospace;padding:2px 8px;border-radius:6px}
+.bar{position:absolute;left:0;bottom:0;height:5px;width:0;background:#fff;transition:width 1.4s linear}
+.card:hover .bar,.card:focus-visible .bar{width:100%}
+.card h3{font:700 18px/1.35 var(--display);margin:12px 0 2px}
+.card small{color:var(--muted);font-size:14px}
+
+.play{position:absolute;inset:0;margin:auto;width:54px;height:54px;border-radius:50%;background:rgba(20,18,28,.7);border:2px solid #fff;display:grid;place-items:center;transition:transform .25s,background .25s}
+.play::after{content:"";border-left:16px solid #fff;border-block:10px solid transparent;margin-left:5px}
+.card:hover .play{transform:scale(1.12);background:var(--pink)}
+.masonry{columns:3 260px;column-gap:18px}
+.shot{break-inside:avoid;margin-bottom:18px;display:block;width:100%;padding:0;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);cursor:zoom-in;color:inherit;font:inherit;text-align:left;transition:transform .25s}
+.shot:hover,.shot:focus-visible{transform:translateY(-4px)}
+.shot img{display:block;width:100%;height:auto}
+.shot .ph2{display:flex;align-items:flex-end;padding:16px;font:700 18px var(--display);color:#14121c}
+.shot span.cap{display:block;padding:10px 14px;font-size:15px;color:var(--muted)}
+.lb{width:min(920px,100%);max-height:94vh;text-align:center}
+.lb .x{position:fixed;top:16px;right:16px;background:var(--panel)}
+.lb img{max-width:100%;max-height:82vh;border-radius:12px}
+.lb .ph3{margin:0 auto;width:min(70vw,440px);border-radius:12px;display:flex;align-items:flex-end;padding:20px;font:700 24px var(--display);color:#14121c;text-align:left}
+.lb p{color:var(--muted);margin-top:12px}
+
+/* career */
+.job{display:grid;grid-template-columns:170px 1fr;gap:12px 32px;padding:28px 0;border-top:1px solid var(--line)}
+.job:last-child{border-bottom:1px solid var(--line)}
+.job time{color:var(--cyan);font:500 15px ui-monospace,monospace;padding-top:4px}
+.job h3{font:700 22px var(--display)}
+.job .co{color:var(--muted);margin-bottom:8px}
+.job ul{padding-left:20px;color:var(--muted)}
+
+/* contact */
+.contact{text-align:center}
+.contact h2{font-size:clamp(34px,7vw,72px)}
+.contact .sub{margin-inline:auto}
+.mail{font:700 clamp(20px,4vw,34px) var(--display);color:var(--pink);text-decoration:none;border-bottom:3px solid currentColor}
+.social{display:flex;justify-content:center;gap:12px;margin-top:32px;flex-wrap:wrap}
+footer{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 40px;border-top:1px solid var(--line)}
+
+/* modal */
+.modal{position:fixed;inset:0;z-index:50;background:rgba(8,6,14,.88);display:grid;place-items:center;padding:20px;animation:fade .2s}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px;width:min(420px,100%);max-height:92vh;overflow:auto}
+.box h3{font:700 22px var(--display);margin:14px 0 2px}
+.box p{color:var(--muted);font-size:15px;margin-bottom:14px}
+.frame{aspect-ratio:9/16;border-radius:12px;overflow:hidden;background:#000;display:grid;place-items:center;text-align:center;color:var(--muted);padding:20px}
+.frame iframe{width:100%;height:100%;border:0}
+.x{float:right;background:none;border:1px solid var(--line);color:var(--text);width:38px;height:38px;border-radius:50%;cursor:pointer;font-size:18px}
+@keyframes fade{from{opacity:0}}
+
+@media(max-width:620px){.card.wide{grid-column:1/-1}}
+@media(max-width:760px){
+  nav ul{display:none}
+  .about{grid-template-columns:1fr;gap:36px}
+  .job{grid-template-columns:1fr}
+  section{padding:72px 0}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+<div id="app" v-cloak>
+
+<nav>
+  <div class="wrap">
+    <a class="logo" href="#top">{{ me.nick }}<b>.</b></a>
+    <ul>
+      <li><a href="#about">เกี่ยวกับฉัน</a></li>
+      <li><a href="#work">ผลงานวิดีโอ</a></li>
+      <li><a href="#gallery">กราฟิกและรูปภาพ</a></li>
+      <li><a href="#career">ประสบการณ์</a></li>
+    </ul>
+    <a class="btn" href="#contact">ติดต่อ</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="role">{{ typed }}<span class="caret"></span></div>
+    <h1>{{ me.name }}</h1>
+    <p class="lead">{{ me.lead }}</p>
+    <div class="cta">
+      <a class="btn" href="#work">ดูผลงาน</a>
+      <a class="btn ghost" href="#contact">คุยงานกัน</a>
+    </div>
+
+    <!-- เลื่อนเมาส์ (หรือนิ้ว) บนไทม์ไลน์เพื่อเลื่อนหัวอ่าน -->
+    <div class="tl" @pointerenter="hover=true" @pointerleave="hover=false" @pointermove="scrub" aria-hidden="true" :style="{'--x': x}">
+      <div class="tl-top"><span>Timeline 01</span><span class="tc">{{ tc }}</span></div>
+      <div class="lane v"><i>V1</i><div>
+        <span class="clip" v-for="c in me.clips" :style="{flex:c.w}">{{ c.n }}</span>
+      </div></div>
+      <div class="lane a"><i>A1</i><div>
+        <span class="clip" v-for="c in me.clips" :style="{flex:c.w}"></span>
+      </div></div>
+      <div class="head"></div>
+    </div>
+  </div>
+</header>
+
+<section id="about">
+  <div class="wrap about">
+    <div>
+      <h2>เล่าเรื่องให้คนอยากกดซื้อ</h2>
+      <p v-for="p in me.about" v-html="p"></p>
+    </div>
+    <div>
+      <div class="facts">
+        <div class="fact" v-for="f in me.facts"><b>{{ f.v }}</b><span>{{ f.l }}</span></div>
+      </div>
+      <div class="tags"><span class="tag" v-for="s in me.skills">{{ s }}</span></div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <h2>ผลงานวิดีโอ</h2>
+    <p class="sub">คลิกที่คลิปเพื่อดูรายละเอียด</p>
+    <div class="filters" role="tablist">
+      <button v-for="c in cats" :key="c" :class="{on:cat===c}" @click="cat=c">{{ c }}</button>
+    </div>
+    <div class="grid">
+      <button class="card" :class="{wide:w.wide}" v-for="w in shown" :key="w.title" @click="active=w" :aria-label="'ดู '+w.title">
+        <div class="thumb" :style="[{'--r':w.r}, w.img ? {backgroundImage:'url('+w.img+')'} : {background:w.bg}]">
+          <span class="play"></span>
+          <span class="dur" v-if="w.dur">{{ w.dur }}</span>
+          <span class="ph" v-if="!w.img">{{ w.title }}</span>
+          <span class="bar"></span>
+        </div>
+        <h3>{{ w.title }}</h3>
+        <small>{{ [w.cat, w.year].filter(Boolean).join(' · ') }}</small>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="wrap">
+    <h2>กราฟิกและรูปภาพ</h2>
+    <p class="sub">งานออกแบบ ภาพโปรโมต และภาพบรรยากาศหลังกล้อง คลิกเพื่อดูภาพใหญ่</p>
+    <div class="masonry">
+      <button class="shot" v-for="(g,i) in gallery" :key="i" @click="photo=g" :aria-label="'ดูภาพ '+g.title">
+        <img v-if="g.img" :src="g.img" :alt="g.title" loading="lazy">
+        <div v-else class="ph2" :style="{background:g.bg,aspectRatio:g.r}">{{ g.title }}</div>
+        <span class="cap" v-if="g.img">{{ g.title }}</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section id="career">
+  <div class="wrap">
+    <h2>เส้นทางการทำงาน</h2>
+    <p class="sub">จากงานตัดต่อและการตลาดออนไลน์ สู่การทำวิดีโอที่ขายของได้จริง</p>
+    <div class="job" v-for="j in me.jobs" :key="j.role+j.co">
+      <time>{{ j.years }}</time>
+      <div>
+        <h3>{{ j.role }}</h3>
+        <div class="co">{{ j.co }}</div>
+        <ul v-if="j.pts.length"><li v-for="p in j.pts">{{ p }}</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <h2>มีงานอยากให้ช่วยทำ?</h2>
+    <p class="sub">ส่งรายละเอียดสินค้าหรือโจทย์มาได้เลย เดี๋ยวตอบกลับโดยเร็ว</p>
+    <a class="mail" :href="'mailto:'+me.email">{{ me.email }}</a>
+    <div class="social">
+      <a class="btn ghost" v-for="l in me.links" :href="l.url" target="_blank" rel="noopener">{{ l.n }}</a>
+    </div>
+  </div>
+</section>
+
+<footer>© {{ new Date().getFullYear() }} {{ me.name }}</footer>
+
+<div class="modal" v-if="active" @click.self="active=null" role="dialog" aria-modal="true" :aria-label="active.title">
+  <div class="box" :style="active.wide ? {width:'min(780px,100%)'} : {}">
+    <button class="x" @click="active=null" aria-label="ปิด">✕</button>
+    <div class="frame" :style="{clear:'both',marginTop:'8px',aspectRatio:active.r}">
+      <iframe v-if="active.embed" :src="active.embed" allowfullscreen loading="lazy" :title="active.title"></iframe>
+      <span v-else>ยังไม่ได้ใส่ลิงก์ฝังวิดีโอ<br>กดปุ่มด้านล่างเพื่อดูบนแพลตฟอร์มต้นทาง</span>
+    </div>
+    <h3>{{ active.title }}</h3>
+    <p>{{ [active.cat, active.year, active.client].filter(Boolean).join(' · ') }}</p>
+    <a class="btn" v-if="active.url" :href="active.url" target="_blank" rel="noopener">เปิดดูคลิปจริง</a>
+  </div>
+</div>
+
+<div class="modal" v-if="photo" @click.self="photo=null" role="dialog" aria-modal="true" :aria-label="photo.title">
+  <div class="lb">
+    <button class="x" @click="photo=null" aria-label="ปิด">✕</button>
+    <img v-if="photo.img" :src="photo.img" :alt="photo.title">
+    <div v-else class="ph3" :style="{background:photo.bg,aspectRatio:photo.r}">{{ photo.title }}</div>
+    <p>{{ photo.title }}</p>
+  </div>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@3.4.27/dist/vue.global.prod.js"></script>
+<script>
+/* ===================== แก้ข้อมูลตรงนี้ได้เลย ===================== */
+const me = {
+  nick: 'Jai',
+  name: 'Natnicha Kamnga',
+  roles: ['Video Creator', 'Video Editor', 'Short-form Storyteller'],
+  lead: 'ตัดต่อและทำคอนเทนต์วิดีโอสำหรับ TikTok, Facebook และ Instagram ที่เน้นให้คนดูแล้วอยากซื้อ',
+  about: [
+    'ทำงานวิดีโอและการตลาดออนไลน์มารวมกัน <strong>ประมาณ 6 ปี</strong> ตอนนี้เป็น Senior Video Creator & Editor ดูแลตั้งแต่คิดคอนเซ็ปต์ ถ่ายทำ ตัดต่อ ไปจนถึงส่งไฟล์',
+    'ถนัดวิดีโอแนวขายของ เพราะเข้าใจทั้งฝั่งภาพและฝั่งตัวเลขการตลาด เลยเลือกจังหวะเล่าเรื่องและคำพูดให้ตรงกับสิ่งที่คนดูอยากรู้',
+    'จบ B.S. สาขา Sustainable Development Technology จากมหาวิทยาลัยธรรมศาสตร์'
+  ],
+  facts: [ {v:'6+ ปี', l:'ประสบการณ์วิดีโอและการตลาดออนไลน์'}, {v:'3 แพลตฟอร์ม', l:'TikTok · Facebook · Instagram'} ],
+  skills: ['ตัดต่อวิดีโอสั้น','เขียนสคริปต์ขาย','ถ่ายทำ','Motion & Caption','Premiere Pro','CapCut','After Effects'], // แก้ให้ตรงกับเครื่องมือที่ใช้จริง
+  clips: [ {n:'Hook',w:2},{n:'Problem',w:3},{n:'Demo',w:4},{n:'Proof',w:3},{n:'CTA',w:2} ],
+  jobs: [
+    { years:'ปัจจุบัน', role:'Senior Video Creator & Editor', co:'Nutrition Science Laboratory (Thailand) Co., Ltd. / Comets Global HQ',
+      pts:['ผลิตวิดีโอขายของสำหรับ TikTok, Facebook, Instagram','ใส่ผลลัพธ์จริงที่ทำได้ เช่น ยอดวิว ยอดขาย ตรงนี้'] },
+    { years:'2020 – 2022', role:'Online Marketing', co:'Goodfilmshop', pts:['เพิ่มสิ่งที่รับผิดชอบและผลลัพธ์ตรงนี้'] }
+  ],
+  email: 'your@email.com',
+  links: [ {n:'TikTok',url:'https://www.tiktok.com/@yourname'}, {n:'Instagram',url:'https://www.instagram.com/yourname'}, {n:'Facebook',url:'https://www.facebook.com/yourname'} ]
+};
+
+/* ผลงานวิดีโอ
+   - วิดีโอ YouTube: แค่วางลิงก์ที่ yt (ลิงก์ปกติ, youtu.be หรือ Shorts ก็ได้) ระบบจะสร้างรูปปก ปุ่มเล่น และขนาดภาพให้เอง
+   - วิดีโอ TikTok/Facebook/IG: ใส่รูปปกที่ img (เช่น 'images/work1.jpg') และลิงก์ที่ url
+   - ถ้าเป็น Shorts แต่ลิงก์เป็นแบบ youtu.be ให้ใส่ r:'9/16' เพิ่ม (ลิงก์ youtube.com/shorts/ ระบบรู้เอง)
+   - r คือสัดส่วนภาพ: '9/16' แนวตั้ง (ค่าเริ่มต้น) หรือ '16/9' แนวนอน
+   - cat คือหมวด ตั้งชื่อเองได้ ปุ่มกรองจะสร้างให้อัตโนมัติ */
+const works = [
+  { title:'วิดีโอ 1', cat:'YouTube', yt:'https://www.youtube.com/watch?v=4Xm5Ehr-QYA' },
+  { title:'วิดีโอ 2', cat:'YouTube', yt:'https://www.youtube.com/watch?v=a9Q061Qv1io' },
+  { title:'วิดีโอ 3', cat:'YouTube', yt:'https://youtu.be/YajjLkGfs5w' },
+  { title:'วิดีโอ 4', cat:'YouTube', yt:'https://youtu.be/y0yZN3xJWw0' },
+  { title:'วิดีโอ 5', cat:'YouTube', yt:'https://youtu.be/4VZuw2Yaqec' },
+  { title:'วิดีโอ 6', cat:'YouTube', yt:'https://youtu.be/j79_T7eqfps' },
+  { title:'วิดีโอ 7', cat:'YouTube', yt:'https://youtu.be/a-Imo7du-FM' },
+  { title:'วิดีโอ 8', cat:'YouTube', yt:'https://youtu.be/w5upCAh7Fjc' },
+  { title:'วิดีโอ 9', cat:'YouTube', yt:'https://youtu.be/AA4r8DS2q5Y' },
+  { title:'วิดีโอ 10', cat:'YouTube', yt:'https://youtu.be/LMiaqIgM-gg' },
+  { title:'วิดีโอ 11', cat:'YouTube', yt:'https://youtu.be/A4Bw1RvhnEE' },
+  { title:'Shorts 1', cat:'Shorts', r:'9/16', yt:'https://youtube.com/shorts/nqjsKd1ObNY' },
+  { title:'Shorts 2', cat:'Shorts', r:'9/16', yt:'https://youtube.com/shorts/BQZDjZxSDu8' },
+  { title:'Shorts 3', cat:'Shorts', r:'9/16', yt:'https://youtu.be/eBcvBtLcwZs' }
+];
+
+/* กราฟิกและรูปภาพ: ใส่ไฟล์รูปที่ img เช่น 'images/art1.jpg' (รูปไม่ต้องเป็นสัดส่วนเดียวกัน)
+   r ใช้เฉพาะตอนยังไม่มีรูป เพื่อแสดงกรอบตัวอย่าง */
+const gallery = [
+  { title:'ภาพที่ 1', img:'', r:'4/5',  bg:'linear-gradient(160deg,#5ce1e6,#2b8fd6)' },
+  { title:'ภาพที่ 2', img:'', r:'1/1',  bg:'linear-gradient(160deg,#ff5c8a,#ff9a5c)' },
+  { title:'ภาพที่ 3', img:'', r:'3/4',  bg:'linear-gradient(160deg,#b08cff,#5c6bff)' },
+  { title:'ภาพที่ 4', img:'', r:'16/10',bg:'linear-gradient(160deg,#ffd45c,#ff5c8a)' },
+  { title:'ภาพที่ 5', img:'', r:'4/5',  bg:'linear-gradient(160deg,#6bffb0,#5ce1e6)' },
+  { title:'ภาพที่ 6', img:'', r:'1/1',  bg:'linear-gradient(160deg,#ff8ad8,#b08cff)' }
+];
+
+/* แปลงลิงก์ YouTube เป็นรูปปกและตัวเล่นอัตโนมัติ (ไม่ต้องแก้ส่วนนี้) */
+const ytId = u => { const m = (u || '').match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/); return m ? m[1] : ''; };
+works.forEach(w => {
+  const id = ytId(w.yt);
+  if(id){
+    w.embed = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+    w.url = w.url || `https://youtu.be/${id}`;
+    w.img = w.img || `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+    w.r = /shorts\//.test(w.yt) ? '9/16' : (w.r || '16/9');
+  }
+  w.bg = w.bg || 'linear-gradient(160deg,#5ce1e6,#ff5c8a)';
+  w.r = w.r || '9/16';
+  w.wide = w.r === '16/9';
+});
+/* ================================================================== */
+
+const { createApp, ref, computed, onMounted, onBeforeUnmount, watch } = Vue;
+createApp({
+  setup(){
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const x = ref(0.08), hover = ref(false);
+    const typed = ref(reduce ? me.roles[0] : '');
+    const cat = ref('ทั้งหมด'), active = ref(null), photo = ref(null);
+    const cats = ['ทั้งหมด', ...new Set(works.map(w => w.cat))];
+    const shown = computed(() => cat.value === 'ทั้งหมด' ? works : works.filter(w => w.cat === cat.value));
+    const tc = computed(() => {
+      const f = Math.floor(x.value * 30 * 30), p = n => String(n).padStart(2,'0');
+      return `00:${p(Math.floor(f/30))}:${p(f%30)}`;
+    });
+    function scrub(e){
+      const r = e.currentTarget.getBoundingClientRect();
+      x.value = Math.min(1, Math.max(0, (e.clientX - r.left - 48) / (r.width - 62)));
+    }
+    let raf, last = performance.now(), alive = true;
+    function tick(t){
+      if(!hover.value) x.value = (x.value + (t - last) * 0.00004) % 1;
+      last = t; if(alive) raf = requestAnimationFrame(tick);
+    }
+    async function type(){
+      let i = 0;
+      while(alive){
+        const w = me.roles[i++ % me.roles.length];
+        for(let k = 1; k <= w.length && alive; k++){ typed.value = w.slice(0,k); await new Promise(r => setTimeout(r, 70)); }
+        await new Promise(r => setTimeout(r, 1400));
+        for(let k = w.length; k >= 0 && alive; k--){ typed.value = w.slice(0,k); await new Promise(r => setTimeout(r, 35)); }
+      }
+    }
+    const onKey = e => {
+      if(e.key === 'Escape'){ active.value = null; photo.value = null; }
+      if(photo.value && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')){
+        const i = gallery.indexOf(photo.value), d = e.key === 'ArrowRight' ? 1 : -1;
+        photo.value = gallery[(i + d + gallery.length) % gallery.length];
+      }
+    };
+    watch([active, photo], ([a, b]) => document.body.style.overflow = (a || b) ? 'hidden' : '');
+    onMounted(() => { addEventListener('keydown', onKey); if(!reduce){ raf = requestAnimationFrame(tick); type(); } });
+    onBeforeUnmount(() => { alive = false; cancelAnimationFrame(raf); removeEventListener('keydown', onKey); });
+    return { me, x, hover, typed, tc, scrub, cats, cat, shown, active, photo, gallery };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
