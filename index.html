@@ -429,7 +429,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 40px;b
     <button class="x" @click="active=null" aria-label="Close">✕</button>
     <div class="frame" :style="{clear:'both',marginTop:'8px',aspectRatio:active.r}">
       <video v-if="active.mp4" :src="active.mp4" controls autoplay playsinline preload="metadata"></video>
-      <iframe v-else-if="active.ttid" :src="'https://www.tiktok.com/embed/v2/'+active.ttid" allowfullscreen loading="lazy" title="TikTok video"></iframe>
+      <iframe v-else-if="active.ttid" :src="'https://www.tiktok.com/player/v1/'+active.ttid+'?autoplay=1&rel=0&music_info=1&description=1&loop=0'" allow="autoplay; fullscreen; encrypted-media" allowfullscreen title="TikTok video"></iframe>
       <iframe v-else-if="active.embed" :src="active.embed" allowfullscreen loading="lazy" :title="active.title"></iframe>
       <span v-else>กดปุ่มด้านล่างเพื่อดูคลิปบนแพลตฟอร์มต้นทาง</span>
     </div>
