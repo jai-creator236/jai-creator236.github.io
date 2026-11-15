@@ -84,6 +84,8 @@ nav ul a:hover{color:var(--text)}
 .mom .ph2{height:100%;display:flex;align-items:flex-end;padding:16px;font:700 18px var(--display);color:#14121c;text-align:left}
 .role-list{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:32px}
 .role-list span{border:1px solid var(--line);border-left:4px solid var(--pink);border-radius:12px;padding:8px 16px;background:var(--panel)}
+.box.tt{width:min(420px,100%,calc((100vh - 150px)*9/16 + 40px));overflow:hidden}
+.frame.tt{padding:0;background:#000;place-items:stretch}
 .frame video{width:100%;height:100%;object-fit:contain;background:#000}
 .ttrail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 4*16px)/5);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:16px;align-items:start}
 .ttrail .card{scroll-snap-align:start;min-width:0}
@@ -425,11 +427,11 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 40px;b
 <footer>© {{ new Date().getFullYear() }} {{ me.name }}</footer>
 
 <div class="modal" v-if="active" @click.self="active=null" role="dialog" aria-modal="true" :aria-label="active.title">
-  <div class="box" :style="active.wide ? {width:'min(780px,100%)'} : {}">
+  <div class="box" :class="{tt:active.ttid}" :style="active.wide ? {width:'min(780px,100%)'} : {}">
     <button class="x" @click="active=null" aria-label="Close">✕</button>
-    <div class="frame" :style="{clear:'both',marginTop:'8px',aspectRatio:active.r}">
+    <div class="frame" :class="{tt:active.ttid}" :style="{clear:'both',marginTop:'8px',aspectRatio:active.r}">
       <video v-if="active.mp4" :src="active.mp4" controls autoplay playsinline preload="metadata"></video>
-      <iframe v-else-if="active.ttid" :src="'https://www.tiktok.com/player/v1/'+active.ttid+'?autoplay=1&rel=0&music_info=1&description=1&loop=0'" allow="autoplay; fullscreen; encrypted-media" allowfullscreen title="TikTok video"></iframe>
+      <iframe id="ttframe" v-else-if="active.ttid" :src="'https://www.tiktok.com/player/v1/'+active.ttid+'?autoplay=1&rel=0&music_info=1&description=1&loop=0'" allow="autoplay; fullscreen; encrypted-media" allowfullscreen title="TikTok video"></iframe>
       <iframe v-else-if="active.embed" :src="active.embed" allowfullscreen loading="lazy" :title="active.title"></iframe>
       <span v-else>กดปุ่มด้านล่างเพื่อดูคลิปบนแพลตฟอร์มต้นทาง</span>
     </div>
@@ -554,7 +556,7 @@ const works = Vue.reactive([
    ถ้าใส่ id:'เลขท้ายลิงก์เต็ม' จะเล่นในเว็บได้ทันที (ระบบพยายามหา id และรูปปกให้เองตอนเปิดหน้า ถ้าไม่ได้ จะกดไปเปิดบน TikTok แทน) */
 const TTL = [
   { n:1,  u:'https://www.tiktok.com/@protrivaofficial/video/7140165262933871873', id:'7140165262933871873', title:'5 ประโยชน์ของอะโวคาโด' },
-  { n:2,  u:'https://vt.tiktok.com/ZSpbNmneQ/', title:'รีวิว ประสบการณ์จากแม่คิ้ม' },
+  { n:2,  u:'https://www.tiktok.com/@protrivaofficial/video/7199833379745877275', id:'7199833379745877275', title:'รีวิว ประสบการณ์จากแม่คิ้ม' },
   { n:3,  u:'https://vt.tiktok.com/ZSpbNCvGA/', title:'ใครมีปัญหา อาการเหล่านี้' },
   { n:4,  u:'https://vt.tiktok.com/ZSpbNPeYS/', title:'การผลิตสารสกัดน้ำมันงาดำ' },
   { n:5,  u:'https://vt.tiktok.com/ZSpbNpN5e/', views:'13.4M', title:'ปวดสะโพกร้าวลงขา' },
@@ -710,6 +712,17 @@ createApp({
       if(i < 0) return;
       photo.value = list[(i + d + list.length) % list.length];
     };
+    const ttSend = (type, value) => { const f = document.getElementById('ttframe'); if(f && f.contentWindow) f.contentWindow.postMessage({ 'x-tiktok-player': true, type, value }, '*'); };
+    let ttPlaying = false;
+    const onMsg = e => {
+      const d = e.data;
+      if(!d || !d['x-tiktok-player']) return;
+      if(d.type === 'onPlayerReady'){
+        ttPlaying = false; ttSend('mute'); ttSend('play');
+        setTimeout(() => { if(!ttPlaying){ ttSend('mute'); ttSend('play'); } }, 900);
+      }
+      if(d.type === 'onStateChange' && d.value === 1) ttPlaying = true;
+    };
     const onKey = e => {
       if(e.key === 'Escape'){ active.value = null; photo.value = null; }
       if(photo.value && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')){
@@ -719,8 +732,8 @@ createApp({
       }
     };
     watch([active, photo], ([a, b]) => document.body.style.overflow = (a || b) ? 'hidden' : '');
-    onMounted(() => { addEventListener('keydown', onKey); addEventListener('scroll', onScroll, { passive: true }); if(!reduce) type(); if(loading.value) runPre(); else initFx(); });
-    onBeforeUnmount(() => { alive = false; removeEventListener('keydown', onKey); removeEventListener('scroll', onScroll); });
+    onMounted(() => { addEventListener('keydown', onKey); addEventListener('message', onMsg); addEventListener('scroll', onScroll, { passive: true }); if(!reduce) type(); if(loading.value) runPre(); else initFx(); });
+    onBeforeUnmount(() => { alive = false; removeEventListener('keydown', onKey); removeEventListener('message', onMsg); removeEventListener('scroll', onScroll); });
     return { step, me, tiktok, tf, funnels, ttShown, openTT, ceoWorks, ceoReady, pi, nextPic, cases, galleryReady, momentsReady, typed, word, count, loading, show, prog, statVal, cats, cat, shown, active, photo, gallery, moments, stats };
   }
 }).mount('#app');
