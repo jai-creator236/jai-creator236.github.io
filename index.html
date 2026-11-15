@@ -436,6 +436,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 40px;b
       <span v-else>กดปุ่มด้านล่างเพื่อดูคลิปบนแพลตฟอร์มต้นทาง</span>
     </div>
     <h3 v-if="active.title">{{ active.title }}</h3>
+    <p v-if="active.ttid" style="font-size:13px;margin:4px 0 12px">กดปุ่ม ▶ ในคลิปเพื่อเล่น</p>
     <p>{{ [active.cat, active.year, active.client].filter(Boolean).join(' · ') }}</p>
     <a class="btn" v-if="active.url" :href="active.url" target="_blank" rel="noopener">{{ active.cat==='TikTok' ? 'Open on TikTok' : 'Open original video' }}</a>
   </div>
@@ -572,7 +573,7 @@ const TTL = [
   { n:15, u:'https://vt.tiktok.com/ZSpbF4QUy/', title:'Mega Sale ลดจัดหนัก' },
   { n:16, u:'https://vt.tiktok.com/ZSpbFbbQf/', title:'อายุ 70 แข็งแรง ไม่เกี่ยวกับโชค' },
   { n:17, u:'https://vt.tiktok.com/ZSpbF9Q1M/', title:'Product Spoilers สายออฟฟิศใครชอบอ่อมแก่' },
-  { n:18, u:'https://vt.tiktok.com/ZSpbFDewP/', title:'ขาตึง เข่าลั่น อย่าลืมดูแลตัวเอง' },
+  { n:18, u:'https://www.tiktok.com/@protriva_official/video/7667097880691363093', id:'7667097880691363093', title:'ขาตึง เข่าลั่น อย่าลืมดูแลตัวเอง' },
   { n:19, u:'https://vt.tiktok.com/ZSpbFuKbf/', title:'บอกลาสิว ผิวไม่มัน กันผมร่วง!' },
   { n:20, u:'https://vt.tiktok.com/ZSpbFnjMV/', title:'สินค้าใหม่ Protriva อยากให้ช่วยเรื่องอะไร?' }
 ];
