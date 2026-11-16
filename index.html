@@ -672,7 +672,7 @@ createApp({
     const ceoReady = ceoWorks.length > 0;
     const tf = ref('All');
     const funnels = computed(() => { const s = [...new Set(tiktok.map(t => t.funnel).filter(Boolean))]; return s.length ? ['All', ...s] : []; });
-    const ttShown = computed(() => tf.value === 'All' ? tiktok : tiktok.filter(t => t.funnel === tf.value));
+    const ttShown = computed(() => (tf.value === 'All' ? tiktok.slice() : tiktok.filter(t => t.funnel === tf.value)).sort((x,y) => y.n - x.n));
     const openTT = t => { if(t.vok || t.ttid) active.value = t; else window.open(t.u, '_blank', 'noopener'); };
     const cats = ['All', ...new Set(works.map(w => w.cat))];
     const shown = computed(() => cat.value === 'All' ? works : works.filter(w => w.cat === cat.value));
