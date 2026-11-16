@@ -330,7 +330,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 40px;b
           <video v-if="t.vok" class="tv" :src="t.mp4+'#t=0.1'" muted loop playsinline preload="auto" v-inview @error="t.vok=false"></video>
           <span class="dur">9:16</span>
           <span class="ph" v-if="!t.img && !t.vok">{{ t.title }}</span>
-          <span class="play"></span>
+          <span class="play" v-if="!t.vok"></span>
           <span class="vw" v-if="t.views">{{ t.views }} views</span>
           <span class="bar"></span>
         </div>
