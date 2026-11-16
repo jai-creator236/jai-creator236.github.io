@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
+<!-- build: tiktok-grid-v3 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Jai — Senior Content Creator &amp; Editor</title>
@@ -322,7 +323,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 40px;b
 <section id="tiktok" v-if="tiktok.length">
   <div class="wrap wide">
     <h2>TikTok Content</h2>
-    <p class="sub">คลิปที่ฉันทำบน TikTok เลื่อนดูไปด้านข้าง คลิกที่คลิปเพื่อดู</p>
+    <p class="sub">คลิปที่ฉันทำบน TikTok คลิกที่คลิปเพื่อดูแบบเต็มพร้อมเสียง</p>
     <div class="filters" v-if="funnels.length>1" role="tablist">
       <button v-for="c in funnels" :key="c" :class="{on:tf===c}" @click="tf=c">{{ c }}</button>
     </div>
