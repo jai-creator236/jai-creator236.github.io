@@ -90,6 +90,8 @@ nav ul a:hover{color:var(--text)}
 .ttrail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 4*16px)/5);gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:16px;align-items:start}
 .ttrail .card{scroll-snap-align:start;min-width:0}
 .ttrail .thumb{--r:9/16;align-items:flex-end}
+.tv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:inherit}
+.ttrail .dur,.ttrail .play{z-index:2}
 .ttrail .ph{position:relative;z-index:1;padding:16px 14px 22px;font-size:17px;line-height:1.35;text-shadow:0 1px 8px rgba(255,255,255,.35)}
 .ttrail .play{inset:0 0 auto 0;top:38%;z-index:2}
 .ttrail,.rail{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
@@ -325,13 +327,14 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 40px;b
     <div class="ttrail" tabindex="0" aria-label="TikTok clips">
       <button class="card" v-for="t in ttShown" :key="t.n" @click="openTT(t)" :aria-label="'Watch TikTok clip '+t.n">
         <div class="thumb" :style="t.img ? {backgroundImage:'url('+t.img+')'} : {background:t.bg}">
+          <video v-if="t.vok" class="tv" :src="t.mp4+'#t=0.1'" muted loop playsinline preload="auto" v-inview @error="t.vok=false"></video>
           <span class="dur">9:16</span>
-          <span class="ph" v-if="!t.img">{{ t.title }}</span>
+          <span class="ph" v-if="!t.img && !t.vok">{{ t.title }}</span>
           <span class="play"></span>
           <span class="vw" v-if="t.views">{{ t.views }} views</span>
           <span class="bar"></span>
         </div>
-        <h3 v-if="t.title && t.img">{{ t.title }}</h3>
+        <h3 v-if="t.title && (t.img || t.vok)">{{ t.title }}</h3>
         <span class="fn" v-if="t.funnel">{{ t.funnel }}</span>
       </button>
     </div>
@@ -427,16 +430,16 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 40px;b
 <footer>© {{ new Date().getFullYear() }} {{ me.name }}</footer>
 
 <div class="modal" v-if="active" @click.self="active=null" role="dialog" aria-modal="true" :aria-label="active.title">
-  <div class="box" :class="{tt:active.ttid}" :style="active.wide ? {width:'min(780px,100%)'} : {}">
+  <div class="box" :class="{tt:active.cat==='TikTok'}" :style="active.wide ? {width:'min(780px,100%)'} : {}">
     <button class="x" @click="active=null" aria-label="Close">✕</button>
-    <div class="frame" :class="{tt:active.ttid}" :style="{clear:'both',marginTop:'8px',aspectRatio:active.r}">
-      <video v-if="active.mp4" :src="active.mp4" controls autoplay playsinline preload="metadata"></video>
+    <div class="frame" :class="{tt:active.cat==='TikTok'}" :style="{clear:'both',marginTop:'8px',aspectRatio:active.r}">
+      <video v-if="active.mp4 && active.vok !== false" :src="active.mp4" controls autoplay loop playsinline @error="active.vok=false"></video>
       <iframe id="ttframe" v-else-if="active.ttid" :src="'https://www.tiktok.com/player/v1/'+active.ttid+'?autoplay=1&rel=0&music_info=1&description=1&loop=0'" allow="autoplay; fullscreen; encrypted-media" allowfullscreen title="TikTok video"></iframe>
       <iframe v-else-if="active.embed" :src="active.embed" allowfullscreen loading="lazy" :title="active.title"></iframe>
       <span v-else>กดปุ่มด้านล่างเพื่อดูคลิปบนแพลตฟอร์มต้นทาง</span>
     </div>
     <h3 v-if="active.title">{{ active.title }}</h3>
-    <p v-if="active.ttid" style="font-size:13px;margin:4px 0 12px">กดปุ่ม ▶ ในคลิปเพื่อเล่น</p>
+    <p v-if="active.ttid && active.vok === false" style="font-size:13px;margin:4px 0 12px">กดปุ่ม ▶ ในคลิปเพื่อเล่น</p>
     <p>{{ [active.cat, active.year, active.client].filter(Boolean).join(' · ') }}</p>
     <a class="btn" v-if="active.url" :href="active.url" target="_blank" rel="noopener">{{ active.cat==='TikTok' ? 'Open on TikTok' : 'Open original video' }}</a>
   </div>
@@ -577,7 +580,7 @@ const TTL = [
   { n:19, u:'https://vt.tiktok.com/ZSpbFuKbf/', title:'บอกลาสิว ผิวไม่มัน กันผมร่วง!' },
   { n:20, u:'https://vt.tiktok.com/ZSpbFnjMV/', title:'สินค้าใหม่ Protriva อยากให้ช่วยเรื่องอะไร?' }
 ];
-const tiktok = Vue.reactive(TTL.map(t => ({ ...t, url:t.u, cat:'TikTok', r:'9/16', img:'', ttid:t.id||'', funnel:t.funnel||'', title:t.title||'', views:t.views||'', bg:'linear-gradient(160deg,#ff5c8a,#5ce1e6)' })));
+const tiktok = Vue.reactive(TTL.map(t => ({ ...t, mp4: t.mp4 || ('videos/' + String(t.n).padStart(2,'0') + '.mp4'), vok: true, url:t.u, cat:'TikTok', r:'9/16', img:'', ttid:t.id||'', funnel:t.funnel||'', title:t.title||'', views:t.views||'', bg:'linear-gradient(160deg,#ff5c8a,#5ce1e6)' })));
 /* หารูปปกและ id จาก TikTok oEmbed (ถ้าบล็อก จะข้ามไปเงียบ ๆ) */
 tiktok.forEach(async t => {
   try{
@@ -667,7 +670,7 @@ createApp({
     const tf = ref('All');
     const funnels = computed(() => { const s = [...new Set(tiktok.map(t => t.funnel).filter(Boolean))]; return s.length ? ['All', ...s] : []; });
     const ttShown = computed(() => tf.value === 'All' ? tiktok : tiktok.filter(t => t.funnel === tf.value));
-    const openTT = t => { if(t.ttid) active.value = t; else window.open(t.u, '_blank', 'noopener'); };
+    const openTT = t => { if(t.vok || t.ttid) active.value = t; else window.open(t.u, '_blank', 'noopener'); };
     const cats = ['All', ...new Set(works.map(w => w.cat))];
     const shown = computed(() => cat.value === 'All' ? works : works.filter(w => w.cat === cat.value));
     let alive = true;
@@ -737,6 +740,17 @@ createApp({
     onBeforeUnmount(() => { alive = false; removeEventListener('keydown', onKey); removeEventListener('message', onMsg); removeEventListener('scroll', onScroll); });
     return { step, me, tiktok, tf, funnels, ttShown, openTT, ceoWorks, ceoReady, pi, nextPic, cases, galleryReady, momentsReady, typed, word, count, loading, show, prog, statVal, cats, cat, shown, active, photo, gallery, moments, stats };
   }
+}).directive('inview', {
+  mounted(el){
+    if(!window.__io){
+      window.__io = new IntersectionObserver(es => es.forEach(e => {
+        const v = e.target;
+        if(e.isIntersecting){ const p = v.play(); if(p && p.catch) p.catch(() => {}); } else { v.pause(); }
+      }), { threshold: .35 });
+    }
+    window.__io.observe(el);
+  },
+  unmounted(el){ if(window.__io) window.__io.unobserve(el); }
 }).mount('#app');
 </script>
 </body>
