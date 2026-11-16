@@ -100,7 +100,8 @@ nav ul a:hover{color:var(--text)}
 .ttrail::-webkit-scrollbar{height:8px}.ttrail::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}.ttrail::-webkit-scrollbar-track{background:transparent}
 .ttrail .card h3{font-size:18px;margin-top:14px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .nb{position:absolute;top:10px;left:10px;background:rgba(20,18,28,.8);color:#fff;font:600 12px ui-monospace,monospace;padding:2px 8px;border-radius:6px}
-.vw{position:absolute;left:10px;bottom:12px;background:var(--pink);color:#14121c;font:700 13px var(--display);padding:2px 10px;border-radius:999px}
+.dbg{position:absolute;left:10px;top:44px;z-index:3;background:#000a;color:#fff;font:600 11px var(--display);padding:1px 8px;border-radius:8px}
+.vw{position:absolute;left:10px;top:12px;background:var(--pink);color:#14121c;font:700 13px var(--display);padding:2px 10px;border-radius:999px}
 .fn{display:inline-block;margin-top:6px;border:1px solid var(--line);border-radius:999px;padding:1px 10px;font-size:12px;color:var(--cyan)}
 .ytitle{margin-top:56px}
 @media(max-width:1000px){.ttrail{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 18px}}
@@ -330,7 +331,8 @@ footer{text-align:center;color:var(--muted);font-size:14px;padding:28px 0 40px;b
     <div class="ttrail" tabindex="0" aria-label="TikTok clips">
       <button class="card" v-for="t in ttShown" :key="t.n" @click="openTT(t)" :aria-label="'Watch TikTok clip '+t.n">
         <div class="thumb" :style="t.img ? {backgroundImage:'url('+t.img+')'} : {background:t.bg}">
-          <video v-if="t.vok" class="tv" :src="t.mp4+'#t=0.1'" muted loop playsinline preload="auto" v-inview @error="t.vok=false"></video>
+          <video v-if="t.vok" class="tv" :src="t.mp4+'#t=0.1'" muted loop playsinline preload="auto" v-inview @error="vfail(t,$event)"></video>
+          <span class="dbg" v-if="t.err">err {{ t.err }}</span>
           <span class="dur">9:16</span>
           <span class="ph" v-if="!t.img && !t.vok">{{ t.title }}</span>
           <span class="play" v-if="!t.vok"></span>
@@ -741,7 +743,8 @@ createApp({
     watch([active, photo], ([a, b]) => document.body.style.overflow = (a || b) ? 'hidden' : '');
     onMounted(() => { addEventListener('keydown', onKey); addEventListener('message', onMsg); addEventListener('scroll', onScroll, { passive: true }); if(!reduce) type(); if(loading.value) runPre(); else initFx(); });
     onBeforeUnmount(() => { alive = false; removeEventListener('keydown', onKey); removeEventListener('message', onMsg); removeEventListener('scroll', onScroll); });
-    return { step, me, tiktok, tf, funnels, ttShown, openTT, ceoWorks, ceoReady, pi, nextPic, cases, galleryReady, momentsReady, typed, word, count, loading, show, prog, statVal, cats, cat, shown, active, photo, gallery, moments, stats };
+    const vfail = (t,e) => { const c = e && e.target && e.target.error; t.err = c ? c.code : '?'; t.vok = false; };
+    return { vfail, step, me, tiktok, tf, funnels, ttShown, openTT, ceoWorks, ceoReady, pi, nextPic, cases, galleryReady, momentsReady, typed, word, count, loading, show, prog, statVal, cats, cat, shown, active, photo, gallery, moments, stats };
   }
 }).directive('inview', {
   mounted(el){
